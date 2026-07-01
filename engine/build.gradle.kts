@@ -34,5 +34,4 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.collection:collection:1.4.5")
-    implementation("com.github.teamnewpipe:NewPipeExtractor:v0.24.3")
 }
