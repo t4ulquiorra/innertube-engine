@@ -1056,7 +1056,7 @@ object YouTube {
                 else -> null
             }
         } catch (e: Exception) {
-            println("Error converting chart item: ${e.message}\n${Json.encodeToString(renderer)}")
+            println("Error converting chart item: ${e.message}")
             null
         }
     }
@@ -1103,7 +1103,7 @@ object YouTube {
                 else -> null
             }
         } catch (e: Exception) {
-            println("Error converting two row item: ${e.message}\n${Json.encodeToString(renderer)}")
+            println("Error converting two row item: ${e.message}")
             null
         }
     }
@@ -1450,48 +1450,6 @@ object YouTube {
 
     private val VISITOR_DATA_REGEX = Regex("^Cg[t|s]")
 
-    fun getNewPipeStreamUrls(videoId: String): List<Pair<Int, String>> {
-        return NewPipeExtractor.newPipePlayer(videoId)
-    }
-
-    suspend fun newPipePlayer(
-        videoId: String,
-        tempRes: PlayerResponse,
-    ): PlayerResponse? {
-        if (tempRes.playabilityStatus.status != "OK") {
-            return null
-        }
-
-        val streamsList = getNewPipeStreamUrls(videoId)
-        if (streamsList.isEmpty()) return null
-
-        val decodedSigResponse = tempRes.copy(
-            streamingData = tempRes.streamingData?.copy(
-                formats = tempRes.streamingData.formats?.map { format ->
-                    format.copy(
-                        url = streamsList.find { it.first == format.itag }?.second ?: format.url,
-                    )
-                },
-                adaptiveFormats = tempRes.streamingData.adaptiveFormats.map { adaptiveFormat ->
-                    adaptiveFormat.copy(
-                        url = streamsList.find { it.first == adaptiveFormat.itag }?.second ?: adaptiveFormat.url,
-                    )
-                },
-            ),
-        )
-
-        val urlList = (
-            decodedSigResponse.streamingData?.adaptiveFormats?.mapNotNull { it.url }?.toMutableList() ?: mutableListOf()
-        ).apply {
-            decodedSigResponse.streamingData?.formats?.mapNotNull { it.url }?.let { addAll(it) }
-        }
-
-        return if (urlList.isNotEmpty()) {
-            decodedSigResponse
-        } else {
-            null
-        }
-    }
 
     suspend fun comments(videoId: String): Result<Pair<List<CommentThreadRenderer>, String?>> = runCatching {
         val response = innerTube.next(YouTubeClient.WEB, videoId, null, null, null, null, null).body<NextResponse>()
