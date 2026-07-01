@@ -4,6 +4,9 @@ plugins {
     `maven-publish`
 }
 
+group = "com.github.t4ulquiorra"
+version = "1.5"
+
 android {
     namespace = "com.music.innertube"
     compileSdk = 35
@@ -34,4 +37,18 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.jakewharton.timber:timber:5.0.1")
     implementation("androidx.collection:collection:1.4.5")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.t4ulquiorra"
+            artifactId = "innertube-engine"
+            version = "1.5"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
